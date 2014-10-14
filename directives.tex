@@ -78,4 +78,6 @@ The task construct includes a task scheduling point in the task region of its ge
 
 When a mergeable clause is present on a task construct, and the generated task is an undeferred task or an included task, the implementation may generate a merged task instead.
 
+The priority clause indicates a hint to the implementation of the priority of the generated task. The priority-value is a non negative numerical scalar expression. It provides a hint to the runtime scheduler system about task execution order. Higher priority tasks (those with a higher numerical value in the priority clause expression) are recommended to execute before lower priority ones. The default priority-value when no priority clause is specified is zero (the lowest priority). A program that relies on task execution order being determined by this priority-value may have unspecified behavior.
+
 Note – When storage is shared by an explicit task region, it is the programmer's responsibility to ensure, by adding proper sy nchronization, that the storage does not reach the end of its lifetime before the explicit task region completes its execution 
