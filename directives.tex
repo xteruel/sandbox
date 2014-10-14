@@ -1,0 +1,79 @@
+Chapter 2 Directives
+
+Cross References
+• target construct, see Section 2.9.2 on page 79.
+• Teams distribute parallel loop SIMD construct, see Section 2.10.12 on page 110.
+• Data attribute clauses, see Section 2.14.3 on page 155.
+
+2.11 Tasking Constructs
+2.11.1 task Construct Summary
+
+The task construct defines an explicit task.
+
+Syntax
+
+C/C++
+
+The syntax of the task construct is as follows:
+
+
+#pragma omp task [clause[[ , ] clause] ...] new-line
+structured-block
+
+where clause is one of the following:
+
+if( scalar-expression)
+final( scalar-expression)
+untied
+default(shared | none)
+mergeable
+private( list)
+firstprivate( list)
+shared( list)
+depend( dependence-type : list )
+
+C/C++
+
+Fortran
+
+The syntax of the task construct is as follows:
+
+!$omp task [clause[[ , ] clause] ...]
+structured-block
+!$omp end task
+
+where clause is one of the following:
+
+if( scalar-logical-expression)
+final( scalar-logical-expression)
+untied
+default(private | firstprivate | shared | none)
+mergeable
+private( list)
+firstprivate( list)
+shared( list)
+depend( dependence-type : list)
+
+Fortran
+
+Binding The binding thread set of the task region is the current team. A task region binds to the innermost enclosing parallel region.  Description When a thread encounters a task construct, a task is generated from the code for the associated structured block. The data environment of the task is created according to the data-sharing attribute clauses on the task construct, per-data environment ICVs, and any defaults that apply.
+
+Description
+
+When a thread encounters a task construct, a task is generated from the code for the associated structured block. The data environment of the task is created according to the data-sharing attribute clauses on the task construct, per-data environment ICVs, and any defaults that apply.
+
+The encountering thread may immediately execute the task, or defer its execution. In the latter case, any thread in the team may be as signed the task. Completion of the task can be guaranteed using task sy nchronization constructs. A task construct may be nested inside an outer task, but the task region of the inner task is not a part of the task region of the outer task.
+
+When an if clause is present on a task construct, and the if clause expression evaluates to false , an undeferred task is generated, and the encountering thread must suspend the current task region, for which execution cannot be resumed until the generated task is completed. Note that the use of a variable in an if clause expression of a task construct causes an implicit referenc e to the variable in all enclosing constructs.
+
+When a final clause is present on a task construct and the final clause expression evaluates to true , the generated task will be a final task. All task constructs encountered during execution of a final task w ill generate final and included tasks. Note that the use of a variable in a final clause expression of a task construct causes an implicit reference to the variable in all enclosing constructs.
+
+The if clause expression and the final clause expression are evaluated in the context outside of the task construct, and no ordering of those evaluations is specified.
+
+A thread that encounters a task scheduling point within the task region may temporarily suspend the task region. By default, a task is tied and its suspended task region can only be resumed by the thread that started its execution. If the untied clause is present on a task construct, any thread in the team can resume the task region after a suspension. The untied clause is ignored if a final clause is present on the same task construct and the final clause expression evaluates to true , or if a task is an included task.
+
+The task construct includes a task scheduling point in the task region of its generating task, immediately following the generation of the explicit task. Each explicit task region includes a task scheduling point at its point of completion.
+
+When a mergeable clause is present on a task construct, and the generated task is an undeferred task or an included task, the implementation may generate a merged task instead.
+
+Note – When storage is shared by an explicit task region, it is the programmer's responsibility to ensure, by adding proper sy nchronization, that the storage does not reach the end of its lifetime before the explicit task region completes its execution 
